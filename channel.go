@@ -12,6 +12,8 @@ func init() {
 
 }
 
+type StereoSample [2][]float64
+
 // Track represents the core track object;
 // It handles the signal flow and low-level interactions.
 type track struct {
@@ -22,7 +24,7 @@ type track struct {
 
 // Source represents an abstract signal flow start point.
 type Source interface {
-	io.ReaderClose
+	io.ReadCloser
 
 	Device() string
 	Format() string
@@ -32,7 +34,7 @@ type Source interface {
 
 // NullSource is a source object whose Read method streams silence.
 type NullSource struct {
-	s ioutil.NopCloser
+	s chan StereoSample
 }
 
 func NewNullSource() Source {
@@ -40,7 +42,7 @@ func NewNullSource() Source {
 }
 
 type Sync interface {
-	io.WriterCloser
+	io.WriteCloser
 }
 
 // Plugin is an abstract node in the signal chain.
